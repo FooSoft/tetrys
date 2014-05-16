@@ -85,7 +85,7 @@ class Board:
         grid_screen_dims = grid_border_width*2+grid_dims[0]*block_dims[0], grid_border_width*2+grid_dims[1]*block_dims[1]
         self.grid_rect = pygame.Rect(grid_position, grid_screen_dims)
 
-        self.blocks = [[0]*grid_dims[1] for i in range(grid_dims[0])]
+        self.blocks = [[0]*grid_dims[0] for i in range(grid_dims[1])]
 
 
     def render(self, surface, tetrad):
@@ -101,7 +101,7 @@ class Board:
     def render_blocks(self, surface):
         for y in xrange(self.grid_dims[1]):
             for x in xrange(self.grid_dims[0]):
-                self.render_block(surface, self.blocks[x][y], (x, y))
+                self.render_block(surface, self.blocks[y][x], (x, y))
 
 
     def render_tetrad(self, surface, tetrad):
@@ -129,7 +129,7 @@ class Board:
                 return False
             if point[0] >= self.grid_dims[0] or point[1] >= self.grid_dims[1]:
                 return False
-            if self.blocks[point[0]][point[1]] != 0:
+            if self.blocks[point[1]][point[0]] != 0:
                 return False
 
         return True
@@ -138,7 +138,7 @@ class Board:
     def place_tetrad(self, tetrad):
         color = tetrad.color()
         for point in tetrad.layout():
-            self.blocks[point[0]][point[1]] = color
+            self.blocks[point[1]][point[0]] = color
 
 
     def settle(self):
@@ -149,7 +149,6 @@ class Board:
             row_src -= 1
             if 0 in row_data:
                 row_dest -= 1
-
 
 
 #
