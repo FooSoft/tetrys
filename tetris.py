@@ -141,6 +141,17 @@ class Board:
             self.blocks[point[0]][point[1]] = color
 
 
+    def settle(self):
+        row_src = row_dst = self.grid_dims[0] - 1
+        while row_dst >= 0:
+            row_data = self.blocks[row_src] if row_src >= 0 else self.grid_dims[0] * [0]
+            self.blocks[row_dst] = row_data
+            row_src -= 1
+            if 0 in row_data:
+                row_dest -= 1
+
+
+
 #
 # Game
 #
