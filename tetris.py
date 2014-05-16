@@ -29,7 +29,7 @@ class Tetrad:
     def color(self):
         return self.block_configs[self.config][0]
 
-    
+
     def layout(self):
         layout = self.block_configs[self.config][1][self.rotation]
         return map(lambda p: (self.position[0]+p[0], self.position[1]+p[1]), layout)
@@ -49,7 +49,6 @@ class Tetrad:
 
     def rotated(self):
         return Tetrad(self.config, self.position, (self.rotation + 1) % self.block_rotations)
-
 
 
 #
@@ -115,6 +114,18 @@ class Board:
         return pygame.Rect(top_left, self.block_dims)
 
 
+    def can_place_tetrad(self, tetrad):
+        for point in tetrad.layout():
+            if point[0] < 0 or point[1] < 0:
+                return False
+            if point[0] >= self.grid_dims[0] or point[1] >= self.grid_dims[1]:
+                return False
+            if self.blocks[point[0]][point[1]] != 0:
+                return False
+
+        return True
+
+
 #
 # Game
 #
@@ -133,20 +144,25 @@ class Game:
         pass
 
 
+    def try_tetrad_action(self, tetrad):
+        if self.board.can_place_tetrad(tetrad):
+            self.tetrad = tetrad
+
+
     def move_left(self):
-        self.tetrad = self.tetrad.moved_left()
+        self.try_tetrad_action(self.tetrad.moved_left())
 
 
     def move_right(self):
-        self.tetrad = self.tetrad.moved_right()
+        self.try_tetrad_action(self.tetrad.moved_right())
 
 
     def move_down(self):
-        self.tetrad = self.tetrad.moved_down()
+        self.try_tetrad_action(self.tetrad.moved_down())
 
 
     def rotate(self):
-        self.tetrad = self.tetrad.rotated()
+        self.try_tetrad_action(self.tetrad.rotated())
 
 
 #
@@ -215,22 +231,6 @@ class Engine:
                 elif event.value < 0: self.game.rotate()
 
         return True
-
-
-    def move_right(self):
-        print 'right'
-
-
-    def move_left(self):
-        print 'left'
-
-
-    def move_down(self):
-        print 'down'
-
-
-    def rotate(self):
-        print 'rotate'
 
 
 #
