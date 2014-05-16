@@ -34,15 +34,24 @@ class Engine:
             return False
 
         if event.type == pygame.KEYDOWN:
-            print 'keydown'
+            if event.key == pygame.K_LEFT:
+                self.move_left()
+            elif event.key == pygame.K_RIGHT:
+                self.move_right()
+            elif event.key == pygame.K_DOWN:
+                self.move_down()
+            elif event.key == pygame.K_UP:
+                self.flip()
+            elif event.key == pygame.K_ESCAPE:
+                return False
+
         elif event.type == pygame.JOYAXISMOTION:
-            print event.axis, event.value
             if event.axis == 0:
                 if event.value > 0: self.move_right()
-                else: self.move_left()
+                elif event.value < 0: self.move_left()
             elif event.axis == 1:
                 if event.value > 0: self.move_down()
-                else: self.flip()
+                elif event.value < 0: self.flip()
 
         return True
 
@@ -58,9 +67,9 @@ class Engine:
     def move_down(self):
         print 'down'
 
+
     def flip(self):
         print 'flip'
-
 
 
 def main():
