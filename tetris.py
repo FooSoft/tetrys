@@ -4,28 +4,51 @@ import pygame
 
 
 class Board:
-    def __init__(self, grid_position, grid_block_dims, block_dims):
+    def __init__(self, grid_position, grid_dims, grid_border_width, block_dims):
+        self.grid_dims = grid_dims
+        self.grid_border_width = grid_border_width
         self.block_dims = block_dims
-        self.grid_dims = grid_block_dims[0]*block_dims[0], grid_block_dims[1]*grid_block_dims[1]
+
+        grid_screen_dims = grid_dims[0]*block_dims[0], grid_dims[1]*block_dims[1]
+        self.grid_rect = pygame.Rect(grid_position, grid_screen_dims)
         self.grid_color = pygame.Color(0xff, 0xff, 0xff, 0xff)
-        self.grid_rect = pygame.Rect(grid_position, self.grid_dims)
+
+        self.blocks = [[0]*grid_dims[0] for i in range(grid_dims[1])]
+        print block_dims
 
 
     def render(self, surface):
         self.render_frame(surface)
+        self.render_blocks(surface)
 
 
     def render_frame(self, surface):
         pygame.draw.rect(surface, self.grid_color, self.grid_rect, 1)
 
 
+    def render_blocks(self, surface):
+        for y in xrange(self.grid_dims[1]):
+            for x in xrange(self.grid_dims[0]):
+                self.render_block(surface, (x, y))
+
+
+    def render_block(self, surface, position):
+        block_rect = self.block_screen_rect(position)
+        pygame.draw.rect(surface, self.grid_color, block_rect, 1)
+
+
     def advance(self):
         pass
+    
+
+    def block_screen_rect(self, position):
+        top_left = self.grid_rect.x+self.block_dims[0]*position[0], self.grid_rect.y+self.block_dims[1]*position[1]
+        return pygame.Rect(top_left, self.block_dims)
 
 
 class Engine:
     def __init__(self):
-        self.board = Board((10, 10), (10, 20), (20, 20))
+        self.board = Board((10, 10), (10, 20), 1, (20, 20))
         self.surface = None
 
 
