@@ -12,10 +12,18 @@ class Board:
         grid_screen_dims = grid_dims[0]*block_dims[0], grid_dims[1]*block_dims[1]
         self.grid_rect = pygame.Rect(grid_position, grid_screen_dims)
         self.grid_color = pygame.Color(0xff, 0xff, 0xff, 0xff)
+        self.block_colors = [
+            pygame.Color(0xff, 0xff, 0xff, 0xff), # None
+            pygame.Color(0x00, 0xff, 0xff, 0xff), # Cyan
+            pygame.Color(0x00, 0x00, 0xff, 0xff), # Blue
+            pygame.Color(0xff, 0x80, 0x00, 0xff), # Orange
+            pygame.Color(0xff, 0xff, 0x00, 0xff), # Yellow
+            pygame.Color(0x00, 0xff, 0x00, 0xff), # Green
+            pygame.Color(0x80, 0x00, 0x80, 0xff), # Purple
+            pygame.Color(0xff, 0x00, 0x00, 0xff)  # Red
+        ]
 
-        self.blocks = [[0]*grid_dims[0] for i in range(grid_dims[1])]
-        print block_dims
-
+        self.blocks = [[0]*grid_dims[1] for i in range(grid_dims[0])]
 
     def render(self, surface):
         self.render_frame(surface)
@@ -29,12 +37,12 @@ class Board:
     def render_blocks(self, surface):
         for y in xrange(self.grid_dims[1]):
             for x in xrange(self.grid_dims[0]):
-                self.render_block(surface, (x, y))
+                self.render_block(surface, self.blocks[x][y], (x, y))
 
 
-    def render_block(self, surface, position):
+    def render_block(self, surface, color, position):
         block_rect = self.block_screen_rect(position)
-        pygame.draw.rect(surface, self.grid_color, block_rect, 1)
+        pygame.draw.rect(surface, self.grid_color, block_rect, 1 if color == 0 else 0)
 
 
     def advance(self):
