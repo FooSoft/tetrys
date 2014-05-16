@@ -27,7 +27,24 @@ class Tetrad:
 
     
     def layout(self):
-        return self.block_configs[self.config][self.rotations]
+        layout = self.block_configs[self.config][self.rotation]
+        return map(lambda p: (self.position[0]+p[0], self.position[1]+p[1]), layout)
+
+
+    def moved_left(self):
+        return Tetrad(self.config, (self.position[0]-1, self.position[1]), self.rotation)
+
+
+    def moved_right(self):
+        return Tetrad(self.config, (self.position[0]+1, self.position[1]), self.rotation)
+
+
+    def moved_down(self):
+        return Tetrad(self.config, (self.position[0], self.position[1]+1), self.rotation)
+
+
+    def rotated(self):
+        return Tetrad(self.config, self.position, (self.rotation + 1) % self.block_rotations)
 
 
 
@@ -38,7 +55,7 @@ class Tetrad:
 class Board:
     grid_color = pygame.Color(0xff, 0xff, 0xff, 0xff)
     block_colors = [
-        pygame.Color(0xff, 0xff, 0xff, 0xff), # White
+        pygame.Color(0x00, 0x00, 0x00, 0xff), # Black
         pygame.Color(0x00, 0xff, 0xff, 0xff), # Cyan
         pygame.Color(0x00, 0x00, 0xff, 0xff), # Blue
         pygame.Color(0xff, 0x80, 0x00, 0xff), # Orange
@@ -54,15 +71,16 @@ class Board:
         self.grid_border_width = grid_border_width
         self.block_dims = block_dims
 
-        grid_screen_dims = grid_dims[0]*block_dims[0], grid_dims[1]*block_dims[1]
+        grid_screen_dims = grid_border_width*2+grid_dims[0]*block_dims[0], grid_border_width*2+grid_dims[1]*block_dims[1]
         self.grid_rect = pygame.Rect(grid_position, grid_screen_dims)
 
         self.blocks = [[0]*grid_dims[1] for i in range(grid_dims[0])]
 
 
-    def render(self, surface):
+    def render(self, surface, tetrad):
         self.render_frame(surface)
         self.render_blocks(surface)
+        self.render_tetrad(surface, tetrad)
 
 
     def render_frame(self, surface):
@@ -75,13 +93,21 @@ class Board:
                 self.render_block(surface, self.blocks[x][y], (x, y))
 
 
+    def render_tetrad(self, surface, tetrad):
+        for point in tetrad.layout():
+            self.render_block(surface, 2, point)
+
+
     def render_block(self, surface, color, position):
         block_rect = self.block_screen_rect(position)
-        pygame.draw.rect(surface, self.grid_color, block_rect, 1 if color == 0 else 0)
+        pygame.draw.rect(surface, self.block_colors[color], block_rect)
 
 
     def block_screen_rect(self, position):
-        top_left = self.grid_rect.x+self.block_dims[0]*position[0], self.grid_rect.y+self.block_dims[1]*position[1]
+        top_left = (
+            self.grid_border_width+self.grid_rect.x+self.block_dims[0]*position[0],
+            self.grid_border_width+self.grid_rect.y+self.block_dims[1]*position[1]
+        )
         return pygame.Rect(top_left, self.block_dims)
 
 
@@ -92,10 +118,11 @@ class Board:
 class Game:
     def __init__(self):
         self.board = Board((10, 10), (10, 20), 1, (20, 20))
+        self.tetrad = Tetrad()
 
 
     def render(self, surface):
-        self.board.render(surface)
+        self.board.render(surface, self.tetrad)
 
 
     def advance(self):
@@ -103,19 +130,19 @@ class Game:
 
 
     def move_left(self):
-        pass
+        self.tetrad = self.tetrad.moved_left()
 
 
     def move_right(self):
-        pass
+        self.tetrad = self.tetrad.moved_right()
 
 
     def move_down(self):
-        pass
+        self.tetrad = self.tetrad.moved_down()
 
 
     def rotate(self):
-        pass
+        self.tetrad = self.tetrad.rotated()
 
 
 #
