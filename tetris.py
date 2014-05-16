@@ -142,13 +142,13 @@ class Board:
 
 
     def settle(self):
-        row_src = row_dst = self.grid_dims[0] - 1
+        row_src = row_dst = self.grid_dims[1] - 1
         while row_dst >= 0:
             row_data = self.blocks[row_src] if row_src >= 0 else self.grid_dims[0] * [0]
             self.blocks[row_dst] = row_data
             row_src -= 1
             if 0 in row_data:
-                row_dest -= 1
+                row_dst -= 1
 
 
 #
@@ -188,6 +188,7 @@ class Game:
     def move_down(self):
         if not self.try_action(self.tetrad.moved_down()):
             self.board.place_tetrad(self.tetrad)
+            self.board.settle()
             self.tetrad = Tetrad.random()
 
 
