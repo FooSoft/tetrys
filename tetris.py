@@ -83,7 +83,7 @@ class Board:
         self.grid_border_width = grid_border_width
         self.block_dims = block_dims
 
-        grid_screen_dims = grid_border_width*2+grid_dims[0]*block_dims[0], grid_border_width*2+grid_dims[1]*block_dims[1]
+        grid_screen_dims = grid_border_width*2 + grid_dims[0]*block_dims[0], grid_border_width*2 + grid_dims[1]*block_dims[1]
         self.grid_rect = pygame.Rect(grid_position, grid_screen_dims)
 
         self.blocks = [[0]*grid_dims[0] for i in range(grid_dims[1])]
@@ -167,12 +167,15 @@ class Game:
 
     def new_game(self):
         self.board = Board((10, 10), (10, 20), 3, (20, 20))
+        self.board_prev = Board((300, 300), (4, 4), 3, (20, 20))
         self.tetrad = Tetrad.random()
+        self.tetrad_next = Tetrad.random()
         self.counter = 0
 
 
     def render(self, surface):
         self.board.render(surface, self.tetrad)
+        self.board_prev.render(surface, self.tetrad_next)
 
 
     def advance(self, elapsed):
@@ -202,7 +205,8 @@ class Game:
         if not self.try_placement(self.tetrad.moved_down()):
             self.board.place_tetrad(self.tetrad)
             self.board.settle()
-            self.tetrad = Tetrad.random()
+            self.tetrad = self.tetrad_next
+            self.tetrad_next = Tetrad.random()
 
 
     def rotate(self):
