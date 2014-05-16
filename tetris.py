@@ -64,7 +64,8 @@ class Tetrad:
 #
 
 class Board:
-    grid_color = pygame.Color(0xff, 0xff, 0xff, 0xff)
+    border_color = pygame.Color(0xff, 0xff, 0xff, 0xff)
+    grid_color = pygame.Color(0x80, 0x80, 0x80, 0xff)
     block_colors = [
         pygame.Color(0x00, 0x00, 0x00, 0xff), # Black
         pygame.Color(0x00, 0xff, 0xff, 0xff), # Cyan
@@ -95,7 +96,7 @@ class Board:
 
 
     def render_frame(self, surface):
-        pygame.draw.rect(surface, self.grid_color, self.grid_rect, 1)
+        pygame.draw.rect(surface, self.border_color, self.grid_rect, self.grid_border_width)
 
 
     def render_blocks(self, surface):
@@ -113,6 +114,8 @@ class Board:
     def render_block(self, surface, color, position):
         block_rect = self.block_screen_rect(position)
         pygame.draw.rect(surface, self.block_colors[color], block_rect)
+        if color != 0:
+            pygame.draw.rect(surface, self.grid_color, block_rect, 1)
 
 
     def block_screen_rect(self, position):
@@ -156,20 +159,29 @@ class Board:
 #
 
 class Game:
+    interval = 500
+
     def __init__(self):
-        self.board = Board((10, 10), (10, 20), 1, (20, 20))
+        self.new_game()
+
+
+    def new_game(self):
+        self.board = Board((10, 10), (10, 20), 3, (20, 20))
         self.tetrad = Tetrad.random()
+        self.counter = 0
 
 
     def render(self, surface):
         self.board.render(surface, self.tetrad)
 
 
-    def advance(self):
-        pass
+    def advance(self, elapsed):
+        self.counter += elapsed
+        if self.counter > self.interval:
+            self.move_down()
 
 
-    def try_action(self, tetrad):
+    def try_placement(self, tetrad):
         if self.board.can_place_tetrad(tetrad):
             self.tetrad = tetrad
             return True
@@ -178,22 +190,23 @@ class Game:
 
 
     def move_left(self):
-        self.try_action(self.tetrad.moved_left())
+        self.try_placement(self.tetrad.moved_left())
 
 
     def move_right(self):
-        self.try_action(self.tetrad.moved_right())
+        self.try_placement(self.tetrad.moved_right())
 
 
     def move_down(self):
-        if not self.try_action(self.tetrad.moved_down()):
+        self.counter = 0
+        if not self.try_placement(self.tetrad.moved_down()):
             self.board.place_tetrad(self.tetrad)
             self.board.settle()
             self.tetrad = Tetrad.random()
 
 
     def rotate(self):
-        self.try_action(self.tetrad.rotated())
+        self.try_placement(self.tetrad.rotated())
 
 
 #
@@ -208,7 +221,9 @@ class Engine:
 
     def create(self, resolution):
         pygame.init()
+
         self.surface = pygame.display.set_mode(resolution, pygame.DOUBLEBUF)
+        self.ticks = pygame.time.get_ticks()
 
         if pygame.joystick.get_count() > 0:
             self.joystick = pygame.joystick.Joystick(0)
@@ -218,8 +233,10 @@ class Engine:
 
 
     def update(self):
-        self.game.advance()
+        ticks = pygame.time.get_ticks()
+        self.game.advance(ticks - self.ticks)
         self.game.render(self.surface)
+        self.ticks = ticks
 
         pygame.display.flip()
         pygame.time.delay(1)
