@@ -3,10 +3,35 @@
 import pygame
 
 
+class Board:
+    def __init__(self, grid_position, grid_block_dims, block_dims):
+        self.block_dims = block_dims
+        self.grid_dims = grid_block_dims[0]*block_dims[0], grid_block_dims[1]*grid_block_dims[1]
+        self.grid_color = pygame.Color(0xff, 0xff, 0xff, 0xff)
+        self.grid_rect = pygame.Rect(grid_position, self.grid_dims)
+
+
+    def render(self, surface):
+        self.render_frame(surface)
+
+
+    def render_frame(self, surface):
+        pygame.draw.rect(surface, self.grid_color, self.grid_rect, 1)
+
+
+    def advance(self):
+        pass
+
+
 class Engine:
+    def __init__(self):
+        self.board = Board((10, 10), (10, 20), (20, 20))
+        self.surface = None
+
+
     def create(self, resolution):
         pygame.init()
-        pygame.display.set_mode(resolution, pygame.DOUBLEBUF)
+        self.surface = pygame.display.set_mode(resolution, pygame.DOUBLEBUF)
 
         if pygame.joystick.get_count() > 0:
             self.joystick = pygame.joystick.Joystick(0)
@@ -16,13 +41,19 @@ class Engine:
 
 
     def update(self):
+        self.board.advance()
+        self.board.render(self.surface)
+
         pygame.display.flip()
         pygame.time.delay(1)
+
         event = pygame.event.poll()
         return self.handle_event(event)
 
 
     def destroy(self):
+        self.surface = None
+
         if self.joystick is not None:
             self.joystick.quit()
 
