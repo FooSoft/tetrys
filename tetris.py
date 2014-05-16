@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pygame
+import random
 
 
 #
@@ -20,9 +21,9 @@ class Tetrad:
     ]
 
 
-    def __init__(self, config=0, position=(0, 0), rotation=0):
-        self.config = config
+    def __init__(self, position, config, rotation):
         self.position = position
+        self.config = config
         self.rotation = rotation
 
 
@@ -36,19 +37,26 @@ class Tetrad:
 
 
     def moved_left(self):
-        return Tetrad(self.config, (self.position[0]-1, self.position[1]), self.rotation)
+        return Tetrad((self.position[0]-1, self.position[1]), self.config, self.rotation)
 
 
     def moved_right(self):
-        return Tetrad(self.config, (self.position[0]+1, self.position[1]), self.rotation)
+        return Tetrad((self.position[0]+1, self.position[1]), self.config, self.rotation)
 
 
     def moved_down(self):
-        return Tetrad(self.config, (self.position[0], self.position[1]+1), self.rotation)
+        return Tetrad((self.position[0], self.position[1]+1), self.config, self.rotation)
 
 
     def rotated(self):
-        return Tetrad(self.config, self.position, (self.rotation + 1) % self.block_rotations)
+        return Tetrad(self.position, self.config, (self.rotation + 1) % self.block_rotations)
+
+
+    @staticmethod
+    def random(position=(0, 0)):
+        config = random.randrange(len(Tetrad.block_configs))
+        rotation = random.randrange(Tetrad.block_rotations)
+        return Tetrad(position, config, rotation)
 
 
 #
@@ -97,8 +105,9 @@ class Board:
 
 
     def render_tetrad(self, surface, tetrad):
+        color = tetrad.color()
         for point in tetrad.layout():
-            self.render_block(surface, tetrad.color(), point)
+            self.render_block(surface, color, point)
 
 
     def render_block(self, surface, color, position):
@@ -126,6 +135,12 @@ class Board:
         return True
 
 
+    def place_tetrad(self, tetrad):
+        color = tetrad.color()
+        for point in tetrad.layout():
+            self.blocks[point[0]][point[1]] = color
+
+
 #
 # Game
 #
@@ -133,7 +148,7 @@ class Board:
 class Game:
     def __init__(self):
         self.board = Board((10, 10), (10, 20), 1, (20, 20))
-        self.tetrad = Tetrad()
+        self.tetrad = Tetrad.random()
 
 
     def render(self, surface):
@@ -144,25 +159,30 @@ class Game:
         pass
 
 
-    def try_tetrad_action(self, tetrad):
+    def try_action(self, tetrad):
         if self.board.can_place_tetrad(tetrad):
             self.tetrad = tetrad
+            return True
+
+        return False
 
 
     def move_left(self):
-        self.try_tetrad_action(self.tetrad.moved_left())
+        self.try_action(self.tetrad.moved_left())
 
 
     def move_right(self):
-        self.try_tetrad_action(self.tetrad.moved_right())
+        self.try_action(self.tetrad.moved_right())
 
 
     def move_down(self):
-        self.try_tetrad_action(self.tetrad.moved_down())
+        if not self.try_action(self.tetrad.moved_down()):
+            self.board.place_tetrad(self.tetrad)
+            self.tetrad = Tetrad.random()
 
 
     def rotate(self):
-        self.try_tetrad_action(self.tetrad.rotated())
+        self.try_action(self.tetrad.rotated())
 
 
 #
