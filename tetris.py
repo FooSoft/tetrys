@@ -184,7 +184,7 @@ class Game:
     text_bg_color = 0x000000ff
     line_multipliers = [100, 300, 500, 800]
     lines_per_level = 10
-    initial_speed = 800
+    base_speed = 800
     speed_multiplier = 2
 
     def __init__(self):
@@ -209,7 +209,7 @@ class Game:
 
         self.ticker = 0
         self.score = 0
-        self.cleared_lines = 0
+        self.lines_cleared = 0
         self.active = True
 
 
@@ -226,9 +226,20 @@ class Game:
         self.board_prev.render(surface)
         self.board_prev.render_tetrad(surface, self.tetrad_next)
 
-        font_text = 'Lines: {0}'.format(self.cleared_lines)
-        font_surface = self.font.render(font_text, False, pygame.Color(self.text_color), pygame.Color(self.text_bg_color))
-        surface.blit(font_surface, self.score_position)
+        self.render_stats(surface)
+
+
+    def render_stats(self, surface):
+        text_lines = [
+            'Score: {0}'.format(self.score),
+            'Lines: {0}'.format(self.lines_cleared),
+            'Level: {0}'.format(self.current_level() + 1)
+        ]
+
+        for index, text_line in enumerate(text_lines):
+            text_surface = self.font.render(text_line, False, pygame.Color(self.text_color), pygame.Color(self.text_bg_color))
+            text_position = self.score_position[0], self.score_position[1] + index*self.font.get_height()
+            surface.blit(text_surface, text_position)
 
 
     def advance(self, elapsed):
@@ -261,10 +272,10 @@ class Game:
 
         self.board.place_tetrad(self.tetrad)
 
-        cleared_lines = self.board.settle()
-        if cleared_lines > 0:
-            self.score += (self.current_level() + 1) * self.line_multipliers[cleared_lines]
-            self.cleared_lines += cleared_lines
+        lines_cleared = self.board.settle()
+        if lines_cleared > 0:
+            self.score += (self.current_level() + 1) * self.line_multipliers[lines_cleared]
+            self.lines_cleared += lines_cleared
 
         self.tetrad = self.tetrad_next.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
@@ -300,13 +311,13 @@ class Game:
             while self.lower_tetrad():
                 pass
 
-    
+
     def current_level(self):
-        return self.cleared_lines / self.lines_per_level
+        return self.lines_cleared / self.lines_per_level
 
 
     def current_speed(self):
-        return self.initial_speed - self.current_level() * self.speed_multiplier
+        return self.base_speed - self.current_level() * self.speed_multiplier
 
 
 #
