@@ -171,15 +171,22 @@ class Game:
 
 
     def new_game(self):
-        border_width = 3
-        block_dims = 20, 20
-        padding = 10
-
-        self.board = Board((padding, padding), (10, 20), border_width, block_dims)
-        self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
+        self.reset_board()
         self.tetrad = Tetrad.random()
         self.tetrad_next = Tetrad.random()
         self.counter = 0
+
+
+    def end_game(self):
+        self.reset_board()
+
+
+    def reset_board(self):
+        border_width = 3
+        block_dims = 20, 20
+        padding = 10
+        self.board = Board((padding, padding), (10, 20), border_width, block_dims)
+        self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
 
 
     def render(self, surface):
@@ -201,6 +208,21 @@ class Game:
         return False
 
 
+    def lower_tetrad(self):
+        self.counter = 0
+        if self.try_placement(self.tetrad.moved_down()):
+            return
+
+        self.board.place_tetrad(self.tetrad)
+        self.board.settle()
+
+        self.tetrad = self.tetrad_next
+        self.tetrad_next = Tetrad.random()
+
+        if not self.try_placement(self.tetrad):
+            self.end_game()
+
+
     def input_left(self):
         self.try_placement(self.tetrad.moved_left())
 
@@ -210,12 +232,7 @@ class Game:
 
 
     def input_down(self):
-        self.counter = 0
-        if not self.try_placement(self.tetrad.moved_down()):
-            self.board.place_tetrad(self.tetrad)
-            self.board.settle()
-            self.tetrad = self.tetrad_next
-            self.tetrad_next = Tetrad.random()
+        self.lower_tetrad()
 
 
     def input_up(self):
