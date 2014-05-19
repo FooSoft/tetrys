@@ -190,26 +190,17 @@ class Game:
     def __init__(self):
         font_path = pygame.font.get_default_font()
         self.font = pygame.font.Font(font_path, 16)
-
-        self.new_game()
+        self.reset()
 
 
     def new_game(self):
-        border_width = 3
-        block_dims = 20, 20
-        padding = 10
-        self.board = Board((padding, padding), (10, 20), border_width, block_dims)
-        self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
-        self.score_position = self.board_prev.grid_rect.left, self.board_prev.grid_rect.bottom+padding
+        self.reset()
 
         self.tetrad = Tetrad.random()
         self.tetrad = self.tetrad.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
         self.tetrad_preview = None
 
-        self.ticker = 0
-        self.score = 0
-        self.lines_cleared = 0
         self.active = True
 
 
@@ -217,14 +208,36 @@ class Game:
         self.active = False
 
 
+    def reset(self):
+        border_width = 3
+        block_dims = 20, 20
+        padding = 10
+
+        self.board = Board((padding, padding), (10, 20), border_width, block_dims)
+        self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
+        self.score_position = self.board_prev.grid_rect.left, self.board_prev.grid_rect.bottom+padding
+
+        self.tetrad = None
+        self.tetrad_next = None
+        self.tetrad_preview = None
+
+        self.ticker = 0
+        self.score = 0
+        self.lines_cleared = 0
+
+        self.active = False
+
+
     def render(self, surface):
         self.board.render(surface)
         if self.tetrad_preview is not None:
             self.board.render_tetrad(surface, self.tetrad_preview, True)
-        self.board.render_tetrad(surface, self.tetrad)
+        if self.tetrad is not None:
+            self.board.render_tetrad(surface, self.tetrad)
 
         self.board_prev.render(surface)
-        self.board_prev.render_tetrad(surface, self.tetrad_next)
+        if self.tetrad_next is not None:
+            self.board_prev.render_tetrad(surface, self.tetrad_next)
 
         self.render_stats(surface)
 
@@ -330,6 +343,7 @@ class Engine:
 
         self.game = Game()
         self.surface = pygame.display.set_mode(resolution, pygame.DOUBLEBUF)
+        pygame.display.set_caption('Tetris')
         self.ticks = pygame.time.get_ticks()
 
         if pygame.joystick.get_count() > 0:
@@ -396,7 +410,7 @@ class Engine:
 
 def main():
     engine = Engine()
-    engine.create((800, 600))
+    engine.create((322, 426))
     while engine.update():
         pass
     engine.destroy()
