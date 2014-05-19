@@ -160,6 +160,8 @@ class Board:
 
 
     def settle(self):
+        settled_count = 0
+
         row_src = row_dst = self.grid_dims[1] - 1
         while row_dst >= 0:
             row_data = self.blocks[row_src] if row_src >= 0 else self.grid_dims[0] * [0]
@@ -167,6 +169,10 @@ class Board:
             row_src -= 1
             if 0 in row_data:
                 row_dst -= 1
+            else:
+                settled_count += 1
+
+        return settled_count
 
 
 #
@@ -174,9 +180,13 @@ class Board:
 #
 
 class Game:
-    interval = 500
+    text_color = 0xeeeeecff
+    text_bg_color = 0x000000ff
 
     def __init__(self):
+        font_path = pygame.font.get_default_font()
+        self.font = pygame.font.Font(font_path, 16)
+
         self.new_game()
 
 
@@ -186,6 +196,7 @@ class Game:
         padding = 10
         self.board = Board((padding, padding), (10, 20), border_width, block_dims)
         self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
+        self.score_position = self.board_prev.grid_rect.left, self.board_prev.grid_rect.bottom+padding
 
         self.tetrad = Tetrad.random()
         self.tetrad = self.tetrad.centered(self.board.grid_dims[0])
@@ -193,6 +204,8 @@ class Game:
         self.tetrad_preview = None
 
         self.counter = 0
+        self.interval = 500
+        self.lines = 0
         self.active = True
 
 
@@ -208,6 +221,10 @@ class Game:
 
         self.board_prev.render(surface)
         self.board_prev.render_tetrad(surface, self.tetrad_next)
+
+        font_text = 'Lines: {0}'.format(self.lines)
+        font_surface = self.font.render(font_text, False, pygame.Color(self.text_color), pygame.Color(self.text_bg_color))
+        surface.blit(font_surface, self.score_position)
 
 
     def advance(self, elapsed):
@@ -239,7 +256,7 @@ class Game:
             return True
 
         self.board.place_tetrad(self.tetrad)
-        self.board.settle()
+        self.lines += self.board.settle()
 
         self.tetrad = self.tetrad_next.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
@@ -281,14 +298,10 @@ class Game:
 #
 
 class Engine:
-    def __init__(self):
-        self.surface = None
-        self.game = Game()
-
-
     def create(self, resolution):
         pygame.init()
 
+        self.game = Game()
         self.surface = pygame.display.set_mode(resolution, pygame.DOUBLEBUF)
         self.ticks = pygame.time.get_ticks()
 
@@ -313,8 +326,6 @@ class Engine:
 
 
     def destroy(self):
-        self.surface = None
-
         if self.joystick is not None:
             self.joystick.quit()
 
