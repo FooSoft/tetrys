@@ -70,6 +70,7 @@ class Tetrad:
 
 class Board:
     border_color = 0xeeeeec
+    preview_color = 0xd3d7cf
     block_colors = [
         (0x555753, 0x2e3436), # Aluminium
         (0xedd400, 0xfce94f), # Butter
@@ -93,7 +94,7 @@ class Board:
         self.blocks = [[0]*grid_dims[0] for i in range(grid_dims[1])]
 
 
-    def render(self, surface, tetrad):
+    def render(self, surface):
         self.render_frame(surface)
         self.render_blocks(surface)
 
@@ -105,19 +106,27 @@ class Board:
     def render_blocks(self, surface):
         for y in xrange(self.grid_dims[1]):
             for x in xrange(self.grid_dims[0]):
-                self.render_block(surface, self.blocks[y][x], False, (x, y))
+                self.render_block(surface, self.blocks[y][x], (x, y))
 
 
-    def render_tetrad(self, surface, tetrad, transparent):
+    def render_tetrad(self, surface, tetrad, preview=False):
         color = tetrad.color()
         for point in tetrad.layout():
-            self.render_block(surface, color, transparent, point)
+            self.render_block(surface, color, point, preview)
 
 
-    def render_block(self, surface, color, transparent, position):
+    def render_block(self, surface, color, position, preview=False):
         block_rect = self.block_screen_rect(position)
-        pygame.draw.rect(surface, self.block_colors[color][1], block_rect)
-        pygame.draw.rect(surface, self.block_colors[color][0], block_rect, 1)
+        if preview:
+            color = 0
+
+        color_outer, color_inner = self.block_colors[color]
+        pygame.draw.rect(surface, color_inner, block_rect)
+        pygame.draw.rect(surface, color_outer, block_rect, 1)
+
+        if preview:
+            position = block_rect.centerx, block_rect.centery
+            pygame.draw.circle(surface, self.preview_color, position, 2)
 
 
     def block_screen_rect(self, position):
@@ -176,6 +185,7 @@ class Game:
 
         self.tetrad = Tetrad.random()
         self.tetrad_next = Tetrad.random()
+        self.tetrad_preview = None
 
         self.counter = 0
         self.active = True
@@ -187,6 +197,8 @@ class Game:
 
     def render(self, surface):
         self.board.render(surface)
+        if self.tetrad_preview is not None:
+            self.board.render_tetrad(surface, self.tetrad_preview, True)
         self.board.render_tetrad(surface, self.tetrad)
 
         self.board_prev.render(surface)
@@ -196,6 +208,12 @@ class Game:
     def advance(self, elapsed):
         if not self.active:
             return
+
+        self.tetrad_preview = None
+        tetrad_preview = self.tetrad.moved_down()
+        while self.board.can_place_tetrad(tetrad_preview):
+            self.tetrad_preview = tetrad_preview
+            tetrad_preview = self.tetrad_preview.moved_down()
 
         self.counter += elapsed
         if self.counter > self.interval:
@@ -314,6 +332,8 @@ class Engine:
                 self.game.rotate()
             elif event.key == pygame.K_SPACE:
                 self.game.drop()
+            elif event.key == pygame.K_n:
+                self.game.new_game()
             elif event.key == pygame.K_ESCAPE:
                 return False
 
