@@ -191,6 +191,8 @@ class Game:
     lines_per_level = 10
     base_speed = 800
     speed_multiplier = 2
+    soft_drop_bonus = 1
+    hard_drop_bonus = 2
 
     def __init__(self):
         font_path = pygame.font.get_default_font()
@@ -308,9 +310,8 @@ class Game:
 
         lines_cleared = self.board.settle()
         if lines_cleared > 0:
-            self.score += (self.current_level() + 1) * self.line_multipliers[lines_cleared - 1]
+            self.update_score((self.current_level() + 1) * self.line_multipliers[lines_cleared - 1])
             self.lines_cleared += lines_cleared
-            self.scoreboard_dirty = True
 
         self.tetrad = self.tetrad_next.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
@@ -334,6 +335,7 @@ class Game:
 
     def move_down(self):
         if self.active:
+            self.update_score(self.soft_drop_bonus)
             self.lower_tetrad()
 
 
@@ -345,7 +347,7 @@ class Game:
     def drop(self):
         if self.active:
             while self.lower_tetrad():
-                pass
+                self.update_score(self.hard_drop_bonus)
 
 
     def current_level(self):
@@ -354,6 +356,12 @@ class Game:
 
     def current_speed(self):
         return self.base_speed - self.current_level() * self.speed_multiplier
+
+
+    def update_score(self, value):
+        if value > 0:
+            self.score += value
+            self.scoreboard_dirty = True
 
 
 #
