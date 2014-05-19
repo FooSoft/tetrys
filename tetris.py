@@ -69,17 +69,16 @@ class Tetrad:
 #
 
 class Board:
-    border_color = 0xffffff
-    grid_color = 0x808080
+    border_color = 0xeeeeec
     block_colors = [
-        0x000000, # Black
-        0x00ffff, # Cyan
-        0x0000ff, # Blue
-        0xff8000, # Orange
-        0xffff00, # Yellow
-        0x00ff00, # Green
-        0x800080, # Purple
-        0xff0000, # Red
+        (0x555753, 0x2e3436), # Black
+        (0xedd400, 0xfce94f), # Butter
+        (0xf57900, 0xfcaf3e), # Orange
+        (0xc17d11, 0xe9b96e), # Chocolate
+        (0x73d216, 0x8ae234), # Chameleon
+        (0x3465a4, 0x729fcf), # Sky Blue
+        (0x75507b, 0xad7fa8), # Plum
+        (0xcc0000, 0xef2929)  # Scarlet Red
     ]
 
 
@@ -118,9 +117,8 @@ class Board:
 
     def render_block(self, surface, color, position):
         block_rect = self.block_screen_rect(position)
-        pygame.draw.rect(surface, self.block_colors[color], block_rect)
-        if color != 0:
-            pygame.draw.rect(surface, self.grid_color, block_rect, 1)
+        pygame.draw.rect(surface, self.block_colors[color][1], block_rect)
+        pygame.draw.rect(surface, self.block_colors[color][0], block_rect, 1)
 
 
     def block_screen_rect(self, position):
