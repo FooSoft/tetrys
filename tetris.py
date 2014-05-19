@@ -287,7 +287,7 @@ class Game:
 
         lines_cleared = self.board.settle()
         if lines_cleared > 0:
-            self.score += (self.current_level() + 1) * self.line_multipliers[lines_cleared]
+            self.score += (self.current_level() + 1) * self.line_multipliers[lines_cleared - 1]
             self.lines_cleared += lines_cleared
 
         self.tetrad = self.tetrad_next.centered(self.board.grid_dims[0])
@@ -360,7 +360,7 @@ class Engine:
         self.ticks = ticks
 
         pygame.display.flip()
-        pygame.time.delay(1)
+        pygame.time.delay(10)
 
         event = pygame.event.poll()
         return self.handle_event(event)
