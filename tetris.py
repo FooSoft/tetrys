@@ -401,6 +401,12 @@ class Engine:
                 if event.value > 0: self.game.move_down()
                 elif event.value < 0: self.game.rotate()
 
+        elif event.type == pygame.JOYBUTTONDOWN:
+            if event.button == 7:
+                self.game.new_game()
+            elif event.button == 3:
+                self.game.drop()
+
         return True
 
 
