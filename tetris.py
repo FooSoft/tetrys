@@ -210,7 +210,7 @@ class Game:
 
     def reset(self):
         border_width = 3
-        block_dims = 20, 20
+        block_dims = 30, 30
         padding = 10
 
         self.board = Board((padding, padding), (10, 20), border_width, block_dims)
@@ -416,7 +416,7 @@ class Engine:
 
 def main():
     engine = Engine()
-    engine.create((322, 426))
+    engine.create((462, 626))
     while engine.update():
         pass
     engine.destroy()
