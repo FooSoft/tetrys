@@ -57,6 +57,10 @@ class Tetrad:
         return Tetrad(self.position, self.config, (self.rotation + 1) % self.block_rotations)
 
 
+    def centered(self, width):
+        return Tetrad((width / 2 - 2, 0), self.config, self.rotation)
+
+
     @staticmethod
     def random(position=(0, 0)):
         config = random.randrange(len(Tetrad.block_configs))
@@ -184,6 +188,7 @@ class Game:
         self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
 
         self.tetrad = Tetrad.random()
+        self.tetrad = self.tetrad.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
         self.tetrad_preview = None
 
@@ -236,7 +241,7 @@ class Game:
         self.board.place_tetrad(self.tetrad)
         self.board.settle()
 
-        self.tetrad = self.tetrad_next
+        self.tetrad = self.tetrad_next.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
 
         if not self.try_placement(self.tetrad):
@@ -269,7 +274,6 @@ class Game:
         if self.active:
             while self.lower_tetrad():
                 pass
-
 
 
 #
