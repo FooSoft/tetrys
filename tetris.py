@@ -33,24 +33,26 @@ class Tetrad:
 
     def layout(self):
         layout = list()
+
         mask = self.block_configs[self.config][1] >> (16 * self.rotation)
         for bit in xrange(16):
             position = bit % 4, bit / 4
             if mask & (1 << bit):
                 layout.append((self.position[0] + position[0], self.position[1] + position[1]))
+
         return layout
 
 
     def moved_left(self):
-        return Tetrad((self.position[0]-1, self.position[1]), self.config, self.rotation)
+        return Tetrad((self.position[0] - 1, self.position[1]), self.config, self.rotation)
 
 
     def moved_right(self):
-        return Tetrad((self.position[0]+1, self.position[1]), self.config, self.rotation)
+        return Tetrad((self.position[0] + 1, self.position[1]), self.config, self.rotation)
 
 
     def moved_down(self):
-        return Tetrad((self.position[0], self.position[1]+1), self.config, self.rotation)
+        return Tetrad((self.position[0], self.position[1] + 1), self.config, self.rotation)
 
 
     def rotated(self):
@@ -87,14 +89,17 @@ class Board:
     ]
 
 
-    def __init__(self, grid_position, grid_dims, grid_border_width, block_dims):
+    def __init__(self, grid_position, grid_dims, grid_border_width, block_size):
         self.grid_dims = grid_dims
         self.grid_border_width = grid_border_width
-        self.block_dims = block_dims
+        self.block_size = block_size
 
-        grid_screen_dims = grid_border_width*2 + grid_dims[0]*block_dims[0], grid_border_width*2 + grid_dims[1]*block_dims[1]
+        grid_screen_dims = (
+            grid_border_width * 2 + grid_dims[0] * block_size,
+            grid_border_width * 2 + grid_dims[1] * block_size
+        )
+
         self.grid_rect = pygame.Rect(grid_position, grid_screen_dims)
-
         self.blocks = [[0]*grid_dims[0] for i in range(grid_dims[1])]
 
 
@@ -135,10 +140,10 @@ class Board:
 
     def block_screen_rect(self, position):
         top_left = (
-            self.grid_border_width+self.grid_rect.x+self.block_dims[0]*position[0],
-            self.grid_border_width+self.grid_rect.y+self.block_dims[1]*position[1]
+            self.grid_border_width + self.grid_rect.x + self.block_size * position[0],
+            self.grid_border_width + self.grid_rect.y + self.block_size * position[1]
         )
-        return pygame.Rect(top_left, self.block_dims)
+        return pygame.Rect(top_left, (self.block_size, self.block_size))
 
 
     def can_place_tetrad(self, tetrad):
@@ -210,11 +215,11 @@ class Game:
 
     def reset(self):
         border_width = 3
-        block_dims = 30, 30
+        block_size = 30
         padding = 10
 
-        self.board = Board((padding, padding), (10, 20), border_width, block_dims)
-        self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
+        self.board = Board((padding, padding), (10, 20), border_width, block_size)
+        self.board_prev = Board((self.board.grid_rect.right + padding, padding), (4, 4), border_width, block_size)
         self.score_position = self.board_prev.grid_rect.left, self.board_prev.grid_rect.bottom+padding
 
         self.tetrad = None
@@ -250,8 +255,18 @@ class Game:
         ]
 
         for index, text_line in enumerate(text_lines):
-            text_surface = self.font.render(text_line, False, pygame.Color(self.text_color), pygame.Color(self.text_bg_color))
-            text_position = self.score_position[0], self.score_position[1] + index*self.font.get_height()
+            text_surface = self.font.render(
+                text_line,
+                False,
+                pygame.Color(self.text_color),
+                pygame.Color(self.text_bg_color)
+            )
+
+            text_position = (
+                self.score_position[0],
+                self.score_position[1] + index*self.font.get_height()
+            )
+
             surface.blit(text_surface, text_position)
 
 
@@ -360,7 +375,7 @@ class Engine:
         self.ticks = ticks
 
         pygame.display.flip()
-        pygame.time.delay(10)
+        pygame.time.delay(1)
 
         event = pygame.event.poll()
         return self.handle_event(event)
