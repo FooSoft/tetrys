@@ -314,6 +314,7 @@ class Game:
 
         self.tetrad = self.tetrad_next.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
+        self.tetrad_preview = None
 
         if not self.try_placement(self.tetrad):
             self.end_game()
