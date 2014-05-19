@@ -171,8 +171,12 @@ class Game:
 
 
     def new_game(self):
-        self.board = Board((10, 10), (10, 20), 3, (20, 20))
-        self.board_prev = Board((300, 300), (4, 4), 3, (20, 20))
+        border_width = 3
+        block_dims = 20, 20
+        padding = 10
+
+        self.board = Board((padding, padding), (10, 20), border_width, block_dims)
+        self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
         self.tetrad = Tetrad.random()
         self.tetrad_next = Tetrad.random()
         self.counter = 0
