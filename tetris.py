@@ -171,24 +171,21 @@ class Game:
 
 
     def new_game(self):
-        self.reset_board()
-        self.tetrad = Tetrad.random()
-        self.tetrad_next = Tetrad.random()
-        self.counter = 0
-        self.active = True
-
-
-    def end_game(self):
-        self.reset_board()
-        self.active = False
-
-
-    def reset_board(self):
         border_width = 3
         block_dims = 20, 20
         padding = 10
         self.board = Board((padding, padding), (10, 20), border_width, block_dims)
         self.board_prev = Board((self.board.grid_rect.right+padding, padding), (4, 4), border_width, block_dims)
+
+        self.tetrad = Tetrad.random()
+        self.tetrad_next = Tetrad.random()
+
+        self.counter = 0
+        self.active = True
+
+
+    def end_game(self):
+        self.active = False
 
 
     def render(self, surface):
@@ -229,19 +226,23 @@ class Game:
 
 
     def input_left(self):
-        self.try_placement(self.tetrad.moved_left())
+        if self.active:
+            self.try_placement(self.tetrad.moved_left())
 
 
     def input_right(self):
-        self.try_placement(self.tetrad.moved_right())
+        if self.active:
+            self.try_placement(self.tetrad.moved_right())
 
 
     def input_down(self):
-        self.lower_tetrad()
+        if self.active:
+            self.lower_tetrad()
 
 
     def input_up(self):
-        self.try_placement(self.tetrad.rotated())
+        if self.active:
+            self.try_placement(self.tetrad.rotated())
 
 
 #
