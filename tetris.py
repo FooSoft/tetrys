@@ -71,7 +71,7 @@ class Tetrad:
 class Board:
     border_color = 0xeeeeec
     block_colors = [
-        (0x555753, 0x2e3436), # Black
+        (0x555753, 0x2e3436), # Aluminium
         (0xedd400, 0xfce94f), # Butter
         (0xf57900, 0xfcaf3e), # Orange
         (0xc17d11, 0xe9b96e), # Chocolate
@@ -96,7 +96,6 @@ class Board:
     def render(self, surface, tetrad):
         self.render_frame(surface)
         self.render_blocks(surface)
-        self.render_tetrad(surface, tetrad)
 
 
     def render_frame(self, surface):
@@ -106,16 +105,16 @@ class Board:
     def render_blocks(self, surface):
         for y in xrange(self.grid_dims[1]):
             for x in xrange(self.grid_dims[0]):
-                self.render_block(surface, self.blocks[y][x], (x, y))
+                self.render_block(surface, self.blocks[y][x], False, (x, y))
 
 
-    def render_tetrad(self, surface, tetrad):
+    def render_tetrad(self, surface, tetrad, transparent):
         color = tetrad.color()
         for point in tetrad.layout():
-            self.render_block(surface, color, point)
+            self.render_block(surface, color, transparent, point)
 
 
-    def render_block(self, surface, color, position):
+    def render_block(self, surface, color, transparent, position):
         block_rect = self.block_screen_rect(position)
         pygame.draw.rect(surface, self.block_colors[color][1], block_rect)
         pygame.draw.rect(surface, self.block_colors[color][0], block_rect, 1)
@@ -187,8 +186,11 @@ class Game:
 
 
     def render(self, surface):
-        self.board.render(surface, self.tetrad)
-        self.board_prev.render(surface, self.tetrad_next)
+        self.board.render(surface)
+        self.board.render_tetrad(surface, self.tetrad)
+
+        self.board_prev.render(surface)
+        self.board_prev.render_tetrad(surface, self.tetrad_next)
 
 
     def advance(self, elapsed):
