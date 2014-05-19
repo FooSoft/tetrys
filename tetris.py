@@ -11,13 +11,13 @@ import random
 class Tetrad:
     block_rotations = 4
     block_configs = [
-        (1, 0x00f0222200f02222),
-        (2, 0x0232007202620270),
-        (3, 0x0033003300330033),
-        (4, 0x0170022300740622),
-        (5, 0x0071022604700322),
-        (6, 0x0462036004620360),
-        (7, 0x0264063002640630)
+        (1, 0x00f0222200f02222), # Shape I
+        (2, 0x0232007202620270), # Shape T
+        (3, 0x0033003300330033), # Shape O
+        (4, 0x0170022300740622), # Shape L
+        (5, 0x0071022604700322), # Shape J
+        (6, 0x0462036004620360), # Shape S
+        (7, 0x0264063002640630)  # Shape Z
     ]
 
 
@@ -69,17 +69,17 @@ class Tetrad:
 #
 
 class Board:
-    border_color = pygame.Color(0xff, 0xff, 0xff, 0xff)
-    grid_color = pygame.Color(0x80, 0x80, 0x80, 0xff)
+    border_color = 0xffffff
+    grid_color = 0x808080
     block_colors = [
-        pygame.Color(0x00, 0x00, 0x00, 0xff), # Black
-        pygame.Color(0x00, 0xff, 0xff, 0xff), # Cyan
-        pygame.Color(0x00, 0x00, 0xff, 0xff), # Blue
-        pygame.Color(0xff, 0x80, 0x00, 0xff), # Orange
-        pygame.Color(0xff, 0xff, 0x00, 0xff), # Yellow
-        pygame.Color(0x00, 0xff, 0x00, 0xff), # Green
-        pygame.Color(0x80, 0x00, 0x80, 0xff), # Purple
-        pygame.Color(0xff, 0x00, 0x00, 0xff)  # Red
+        0x000000, # Black
+        0x00ffff, # Cyan
+        0x0000ff, # Blue
+        0xff8000, # Orange
+        0xffff00, # Yellow
+        0x00ff00, # Green
+        0x800080, # Purple
+        0xff0000, # Red
     ]
 
 
@@ -186,7 +186,7 @@ class Game:
     def advance(self, elapsed):
         self.counter += elapsed
         if self.counter > self.interval:
-            self.move_down()
+            self.input_down()
 
 
     def try_placement(self, tetrad):
@@ -197,15 +197,15 @@ class Game:
         return False
 
 
-    def move_left(self):
+    def input_left(self):
         self.try_placement(self.tetrad.moved_left())
 
 
-    def move_right(self):
+    def input_right(self):
         self.try_placement(self.tetrad.moved_right())
 
 
-    def move_down(self):
+    def input_down(self):
         self.counter = 0
         if not self.try_placement(self.tetrad.moved_down()):
             self.board.place_tetrad(self.tetrad)
@@ -214,7 +214,7 @@ class Game:
             self.tetrad_next = Tetrad.random()
 
 
-    def rotate(self):
+    def input_up(self):
         self.try_placement(self.tetrad.rotated())
 
 
@@ -269,23 +269,23 @@ class Engine:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                self.game.move_left()
+                self.game.input_left()
             elif event.key == pygame.K_RIGHT:
-                self.game.move_right()
+                self.game.input_right()
             elif event.key == pygame.K_DOWN:
-                self.game.move_down()
+                self.game.input_down()
             elif event.key == pygame.K_UP:
-                self.game.rotate()
+                self.game.input_up()
             elif event.key == pygame.K_ESCAPE:
                 return False
 
         elif event.type == pygame.JOYAXISMOTION:
             if event.axis == 0:
-                if event.value > 0: self.game.move_right()
-                elif event.value < 0: self.game.move_left()
+                if event.value > 0: self.game.input_right()
+                elif event.value < 0: self.game.input_left()
             elif event.axis == 1:
-                if event.value > 0: self.game.move_down()
-                elif event.value < 0: self.game.rotate()
+                if event.value > 0: self.game.input_down()
+                elif event.value < 0: self.game.input_up()
 
         return True
 
