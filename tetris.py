@@ -220,7 +220,8 @@ class Game:
 
         self.board = Board((padding, padding), (10, 20), border_width, block_size)
         self.board_prev = Board((self.board.grid_rect.right + padding, padding), (4, 4), border_width, block_size)
-        self.score_position = self.board_prev.grid_rect.left, self.board_prev.grid_rect.bottom+padding
+        self.scoreboard_position = self.board_prev.grid_rect.left, self.board_prev.grid_rect.bottom+padding
+        self.scoreboard_dirty = True
 
         self.tetrad = None
         self.tetrad_next = None
@@ -244,10 +245,13 @@ class Game:
         if self.tetrad_next is not None:
             self.board_prev.render_tetrad(surface, self.tetrad_next)
 
-        self.render_stats(surface)
+        self.render_scoreboard(surface)
 
 
-    def render_stats(self, surface):
+    def render_scoreboard(self, surface):
+        if not self.scoreboard_dirty:
+            return
+
         text_lines = [
             'Score: {0}'.format(self.score),
             'Lines: {0}'.format(self.lines_cleared),
@@ -263,11 +267,13 @@ class Game:
             )
 
             text_position = (
-                self.score_position[0],
-                self.score_position[1] + index*self.font.get_height()
+                self.scoreboard_position[0],
+                self.scoreboard_position[1] + index * self.font.get_height()
             )
 
             surface.blit(text_surface, text_position)
+
+        self.scoreboard_dirty = False
 
 
     def advance(self, elapsed):
@@ -304,6 +310,7 @@ class Game:
         if lines_cleared > 0:
             self.score += (self.current_level() + 1) * self.line_multipliers[lines_cleared - 1]
             self.lines_cleared += lines_cleared
+            self.scoreboard_dirty = True
 
         self.tetrad = self.tetrad_next.centered(self.board.grid_dims[0])
         self.tetrad_next = Tetrad.random()
