@@ -175,10 +175,12 @@ class Game:
         self.tetrad = Tetrad.random()
         self.tetrad_next = Tetrad.random()
         self.counter = 0
+        self.active = True
 
 
     def end_game(self):
         self.reset_board()
+        self.active = False
 
 
     def reset_board(self):
@@ -195,9 +197,12 @@ class Game:
 
 
     def advance(self, elapsed):
+        if not self.active:
+            return
+
         self.counter += elapsed
         if self.counter > self.interval:
-            self.input_down()
+            self.lower_tetrad()
 
 
     def try_placement(self, tetrad):
