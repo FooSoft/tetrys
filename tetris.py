@@ -213,7 +213,7 @@ class Game:
     def lower_tetrad(self):
         self.counter = 0
         if self.try_placement(self.tetrad.moved_down()):
-            return
+            return True
 
         self.board.place_tetrad(self.tetrad)
         self.board.settle()
@@ -224,25 +224,34 @@ class Game:
         if not self.try_placement(self.tetrad):
             self.end_game()
 
+        return False
 
-    def input_left(self):
+
+    def move_left(self):
         if self.active:
             self.try_placement(self.tetrad.moved_left())
 
 
-    def input_right(self):
+    def move_right(self):
         if self.active:
             self.try_placement(self.tetrad.moved_right())
 
 
-    def input_down(self):
+    def move_down(self):
         if self.active:
             self.lower_tetrad()
 
 
-    def input_up(self):
+    def rotate(self):
         if self.active:
             self.try_placement(self.tetrad.rotated())
+
+
+    def drop(self):
+        if self.active:
+            while self.lower_tetrad():
+                pass
+
 
 
 #
@@ -296,23 +305,25 @@ class Engine:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                self.game.input_left()
+                self.game.move_left()
             elif event.key == pygame.K_RIGHT:
-                self.game.input_right()
+                self.game.move_right()
             elif event.key == pygame.K_DOWN:
-                self.game.input_down()
+                self.game.move_down()
             elif event.key == pygame.K_UP:
-                self.game.input_up()
+                self.game.rotate()
+            elif event.key == pygame.K_SPACE:
+                self.game.drop()
             elif event.key == pygame.K_ESCAPE:
                 return False
 
         elif event.type == pygame.JOYAXISMOTION:
             if event.axis == 0:
-                if event.value > 0: self.game.input_right()
-                elif event.value < 0: self.game.input_left()
+                if event.value > 0: self.game.move_right()
+                elif event.value < 0: self.game.move_left()
             elif event.axis == 1:
-                if event.value > 0: self.game.input_down()
-                elif event.value < 0: self.game.input_up()
+                if event.value > 0: self.game.move_down()
+                elif event.value < 0: self.game.rotate()
 
         return True
 
