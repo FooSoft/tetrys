@@ -374,7 +374,7 @@ class Engine:
 
         self.game = Game()
         self.surface = pygame.display.set_mode(resolution, pygame.DOUBLEBUF)
-        pygame.display.set_caption('Tetris')
+        pygame.display.set_caption('Tetrys')
         self.ticks = pygame.time.get_ticks()
 
         if pygame.joystick.get_count() > 0:
