@@ -13,4 +13,4 @@ will fall if left where it is.
 The full [source code](https://github.com/FooSoft/tetrys/) can be accessed on my GitHub page (it is only one file).
 Below is a screenshot of what the game looks like running in Linux:
 
-![](index/tetrys.png)
+![](http://foosoft.net/projects/tetrys/img/tetrys.png)
