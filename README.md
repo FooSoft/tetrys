@@ -1,4 +1,4 @@
-# Tetrys
+# Tetrys #
 
 Tetrys is a minimalist [Tetris](http://en.wikipedia.org/wiki/Tetris) clone written using
 [Pygame](http://www.pygame.org/). I started it as a project to teach my girlfriend the basics of game development in
@@ -11,6 +11,7 @@ the bottom of the well instantly. A small "shadow tetrad" at the bottom of the w
 will fall if left where it is.
 
 The full [source code](https://github.com/FooSoft/tetrys/) can be accessed on my GitHub page (it is only one file).
-Below is a screenshot of what the game looks like running in Linux:
 
-![](http://foosoft.net/projects/tetrys/img/tetrys.png)
+## Screenshots ##
+
+[![Game window](img/tetrys-thumb.png)](img/tetrys.png)
