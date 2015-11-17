@@ -10,8 +10,10 @@ current tetrad around the screen. The `Down` key accelerates the descent of the 
 the bottom of the well instantly. A small "shadow tetrad" at the bottom of the well indicates where the current tetrad
 will fall if left where it is.
 
-The full [source code](https://github.com/FooSoft/tetrys/) can be accessed on my GitHub page (it is only one file).
-
 ## Screenshots ##
 
 [![Game window](img/tetrys-thumb.png)](img/tetrys.png)
+
+## License ##
+
+MIT
