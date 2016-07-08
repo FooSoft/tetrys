@@ -1,7 +1,7 @@
 # Tetrys #
 
-Tetrys is a minimalist *Tetris* clone written in [Pygame](http://www.pygame.org/). It started it as a project to teach
-my girlfriend the basics of game development, using what I believe to be the easiest language for programming newbies to
+Tetrys is a minimalist Tetris clone written in [Pygame](http://www.pygame.org/). It began as a project to teach my
+girlfriend the basics of game development, using what I believe to be the easiest language for programming newbies to
 grasp: [Python](https://www.python.org/). This game is cross-platform compatible and has basic gamepad support (there is
 no way to configure what the buttons do; that is an exercise left to the reader).
 
