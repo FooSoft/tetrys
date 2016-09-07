@@ -1,4 +1,3 @@
-# Tetrys #
 
 Tetrys is a minimalist Tetris clone written in Python. It is cross-platform compatible and has basic gamepad support.
 There is presently no way to configure what the buttons do; that is an exercise left to the reader.
