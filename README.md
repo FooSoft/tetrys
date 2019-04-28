@@ -8,11 +8,6 @@ When running the application you can press the <kbd>N</kbd> key to start a new g
 of the current piece, and <kbd>Space</kbd> drops it to the bottom of the well instantly. A small shadow tetrad at the
 bottom of the well indicates where the current piece will fall.
 
-## Requirements ##
+Tetrys requires [Python 2.7](http://www.python.org/download/releases/2.7/) and [pygame](http://www.pygame.org/).
 
-*   [Python 2.7](http://www.python.org/download/releases/2.7/)
-*   [pygame](http://www.pygame.org/)
-
-## Screenshots ##
-
-[![Game window](https://foosoft.net/projects/tetrys/img/tetrys-thumb.png)](https://foosoft.net/projects/tetrys/img/tetrys.png)
+![](https://foosoft.net/projects/tetrys/img/tetrys.png)
