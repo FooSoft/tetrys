@@ -35,8 +35,8 @@ class Tetrad:
         layout = list()
 
         mask = self.block_configs[self.config][1] >> (16 * self.rotation)
-        for bit in xrange(16):
-            position = bit % 4, bit / 4
+        for bit in range(16):
+            position = bit % 4, bit // 4
             if mask & (1 << bit):
                 layout.append((self.position[0] + position[0], self.position[1] + position[1]))
 
@@ -60,7 +60,7 @@ class Tetrad:
 
 
     def centered(self, width):
-        return Tetrad((width / 2 - 2, 0), self.config, self.rotation)
+        return Tetrad((width // 2 - 2, 0), self.config, self.rotation)
 
 
     @staticmethod
@@ -113,8 +113,8 @@ class Board:
 
 
     def render_blocks(self, surface):
-        for y in xrange(self.grid_dims[1]):
-            for x in xrange(self.grid_dims[0]):
+        for y in range(self.grid_dims[1]):
+            for x in range(self.grid_dims[0]):
                 self.render_block(surface, self.blocks[y][x], (x, y))
 
 
