@@ -1,3 +1,12 @@
+<!-- +++
+Area = "projects"
+GitHub = "tetrys"
+Layout = "page"
+Tags = ["tetrys", "python", "games", "pygame", "tetris", "mit license", "sdl"]
+Description = "Simple Tetris clone written in Python."
+Collection = "ProjectsComplete"
++++ -->
+
 # Tetrys
 
 Tetrys is a minimalist Tetris clone written in Python. It is cross-platform compatible and has basic gamepad support.
@@ -10,4 +19,4 @@ bottom of the well indicates where the current piece will fall.
 
 Tetrys requires [Python](http://www.python.org/) and [pygame](http://www.pygame.org/).
 
-![](https://foosoft.net/projects/tetrys/img/tetrys.png)
+![](img/tetrys.png)
